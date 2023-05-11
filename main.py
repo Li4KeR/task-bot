@@ -12,7 +12,7 @@ from sql_logic import *
 
 """ настройки """
 token = '6254363282:AAGQJkntDkeqFsycS3e-Rx5nJp7fwG7pPiM'
-bot = Bot(token=token, parse_mode=types.ParseMode.HTML)
+bot = Bot(token=token)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
@@ -26,13 +26,13 @@ class TaskModel(StatesGroup):
 @dp.message_handler(commands="start")
 async def menu_start(message: types.Message):
     """ стартовое меню """
-    await message.answer("yo", reply_markup=main)
+    await message.answer("Доброе пожаловать, хозяин! <3", reply_markup=main)
 
 
 @dp.callback_query_handler(lambda call: "main" in call.data)
 async def next_keyboard(call: types.CallbackQuery):
     """ возвращение в стартовое меню """
-    await call.message.edit_text(text="yo")
+    await call.message.edit_text(text="Доброе пожаловать, хозяин! <3")
     await call.message.edit_reply_markup(reply_markup=main)
     await call.answer()
 
@@ -104,6 +104,15 @@ async def task_done(call: types.CallbackQuery):
     task_id = call.data.split('_')[2]
     sql_task_done(task_id)
     await call.message.edit_text(f"Задача завершена")
+    await call.message.edit_reply_markup(reply_markup=back_to_main)
+
+
+@dp.callback_query_handler((Text(startswith='delete_task_')))
+async def task_done(call: types.CallbackQuery):
+    """ удаление задачи """
+    task_id = call.data.split('_')[2]
+    sql_delete_task(task_id)
+    await call.message.edit_text(f"Задача удалена")
     await call.message.edit_reply_markup(reply_markup=back_to_main)
 
 

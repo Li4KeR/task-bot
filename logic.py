@@ -34,6 +34,8 @@ def get_all_info_task(task_id):
         date_done = row[1]
         deadline = row[2]
         name = row[3]
+        if date_done == None:
+            date_done = 'Нет'
         task_info = {
             'name': f'{name}',
             'date_create': f'{date_create}',
